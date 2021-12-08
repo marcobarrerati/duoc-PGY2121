@@ -1,0 +1,491 @@
+package biblioteca.view;
+
+import biblioteca.controller.LibroController;
+import biblioteca.model.LibroModel;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
+
+/**
+ *
+ * @author Marco <marc.barrera@duocuc.cl>
+ */
+public class JFrameLibroListarUI extends javax.swing.JFrame {
+
+    String col[] = {"ID", "Nombre", "Editorial", "Autor", "Cantidad", "Fecha"};
+
+    LibroController libroCtrl;
+    ArrayList<LibroModel> datos;
+    Integer selectedRow = -1;
+    private TableRowSorter<TableModel> rowSorter;
+
+    /**
+     * Nuevo JTable para presentar datos
+     */
+    DefaultTableModel tableModel = new DefaultTableModel(col, 0) {
+        /**
+         * Sobreescribimos el método para evitar edición de filas en el
+         * tableModel
+         *
+         * @param row
+         * @param column
+         * @return
+         */
+        @Override
+        public boolean isCellEditable(int row, int column) {
+            return false; // no queremos editar filas del JTable
+        }
+    };
+
+    /**
+     * Creates new form JFrameLibroListar
+     */
+    public JFrameLibroListarUI() {
+
+        initComponents();
+        setResizable(false);
+        pack();
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        setTitle("Buscar Libro");
+        // Configurar JTable
+        libroCtrl = new LibroController();
+        datos = libroCtrl.list();
+        // Recorrer datos y agregar en la JTable
+        for (Iterator it = datos.iterator(); it.hasNext();) {
+            LibroModel libro = (LibroModel) it.next();
+            Object[] objs = {libro.getId(), libro.getNombre(), libro.getEditorial(), libro.getAutor(), libro.getCantidad(), libro.getFechaDeIngreso()};
+            tableModel.addRow(objs);
+        }
+
+        jTableLibros.setRowSorter(rowSorter);
+        jTableLibros.getTableHeader().setFont(new Font("", Font.BOLD, 12));
+        jTableLibros.setCursor(Cursor.getPredefinedCursor(12));
+        jTableLibros.setModel(tableModel);
+        jTableLibros.setGridColor(Color.gray);
+        jXDatePickerFecha.setFormats(new SimpleDateFormat("dd-MM-yyyy"));
+
+        // Implementamos Listener para capturar fila seleccionada
+        jTableLibros.addMouseListener(new MouseAdapter() {
+
+            public void mouseClicked(MouseEvent e) {
+
+                int fila = jTableLibros.rowAtPoint(e.getPoint());
+
+                selectedRow = jTableLibros.convertRowIndexToModel(fila);
+
+                libroCtrl.objLibroM.setId((Integer) tableModel.getValueAt(selectedRow, 0));
+                libroCtrl.objLibroM.setNombre((String) tableModel.getValueAt(selectedRow, 1));
+                libroCtrl.objLibroM.setEditorial((String) tableModel.getValueAt(selectedRow, 2));
+                libroCtrl.objLibroM.setAutor((String) tableModel.getValueAt(selectedRow, 3));
+                libroCtrl.objLibroM.setCantidad((Integer) tableModel.getValueAt(selectedRow, 4));
+                libroCtrl.objLibroM.setFecha_de_ingreso((LocalDate) tableModel.getValueAt(selectedRow, 5));
+
+                asignaEstudianteSeleccionado();
+
+            }
+
+        });
+
+    }
+
+    /**
+     * Función privada para asignar datos de libro seleccionado en formulario
+     */
+    private void asignaEstudianteSeleccionado() {
+
+        JTextFieldNombre.setText(libroCtrl.objLibroM.getNombre());
+        JTextFieldEditorial.setText(libroCtrl.objLibroM.getEditorial());
+        JTextFieldAutor.setText(libroCtrl.objLibroM.getAutor());
+        jXDatePickerFecha.setDate(Date.from(libroCtrl.objLibroM.getFechaDeIngreso().atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()));
+        JSpinnerCantidad.setValue(libroCtrl.objLibroM.getCantidad());
+
+    }
+    /**
+     * 
+     */
+    private void buscaPorNombre() {
+
+        String buscado = jTextFieldNombreBuscado.getText();
+        datos = libroCtrl.buscarPorNombre(buscado);
+        while (tableModel.getRowCount() > 0) {
+            tableModel.removeRow(0);
+        }
+        for (Iterator it = datos.iterator(); it.hasNext();) {
+            LibroModel libro = (LibroModel) it.next();
+            Object[] objs = {libro.getId(), libro.getNombre(), libro.getEditorial(), libro.getAutor(), libro.getCantidad(), libro.getFechaDeIngreso()};
+            tableModel.addRow(objs);
+
+        }
+
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jPanel4 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jTableLibros = new javax.swing.JTable();
+        jLabel1 = new javax.swing.JLabel();
+        jTextFieldNombreBuscado = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        jLabelNombre = new javax.swing.JLabel();
+        JTextFieldNombre = new javax.swing.JTextField();
+        jLabelFecha = new javax.swing.JLabel();
+        JSpinnerCantidad = new javax.swing.JSpinner();
+        jLabelEditorial = new javax.swing.JLabel();
+        JTextFieldEditorial = new javax.swing.JTextField();
+        JTextFieldAutor = new javax.swing.JTextField();
+        jLabelAutor = new javax.swing.JLabel();
+        jLabelCantidad = new javax.swing.JLabel();
+        jButtonEliminar = new javax.swing.JButton();
+        ButtonGuardar = new javax.swing.JButton();
+        jXDatePickerFecha = new org.jdesktop.swingx.JXDatePicker();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel4.setBackground(new java.awt.Color(3, 43, 68));
+
+        jPanel1.setBackground(new java.awt.Color(234, 185, 79));
+        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(234, 185, 79)));
+
+        jTableLibros.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        jTableLibros.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jTableLibros.setRowHeight(24);
+        jScrollPane1.setViewportView(jTableLibros);
+
+        jLabel1.setFont(new java.awt.Font("Lucida Grande", 0, 24)); // NOI18N
+        jLabel1.setText("Libros Registrados");
+
+        jTextFieldNombreBuscado.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                jTextFieldNombreBuscadoKeyPressed(evt);
+            }
+        });
+
+        jLabel2.setText("Buscar Nombre");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(24, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jTextFieldNombreBuscado, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 627, Short.MAX_VALUE))
+                .addGap(19, 19, 19))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jTextFieldNombreBuscado, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jPanel3.setBackground(new java.awt.Color(234, 185, 79));
+        jPanel3.setBorder(new javax.swing.border.LineBorder(new java.awt.Color(234, 185, 79), 1, true));
+
+        jLabelNombre.setText("Nombre");
+        jLabelNombre.setToolTipText("");
+
+        jLabelFecha.setText("Fecha");
+
+        JSpinnerCantidad.setModel(new javax.swing.SpinnerNumberModel(1, 0, 999, 1));
+
+        jLabelEditorial.setText("Editorial");
+        jLabelEditorial.setToolTipText("");
+
+        jLabelAutor.setText("Autor");
+        jLabelAutor.setToolTipText("");
+
+        jLabelCantidad.setText("Cantidad");
+
+        jButtonEliminar.setText("ELIMINAR");
+        jButtonEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonEliminarActionPerformed(evt);
+            }
+        });
+
+        ButtonGuardar.setText("ACTUALIZAR");
+        ButtonGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ButtonGuardarActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(jLabelNombre, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelFecha, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelCantidad, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelAutor, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jLabelEditorial, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(JSpinnerCantidad, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(JTextFieldNombre, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(JTextFieldEditorial, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(JTextFieldAutor, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jXDatePickerFecha, javax.swing.GroupLayout.DEFAULT_SIZE, 200, Short.MAX_VALUE)))
+                    .addGroup(jPanel3Layout.createSequentialGroup()
+                        .addGap(75, 75, 75)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(ButtonGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(55, Short.MAX_VALUE))
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addGap(44, 44, 44)
+                .addComponent(jLabelNombre)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(JTextFieldNombre, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addComponent(jLabelEditorial)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(JTextFieldEditorial, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(15, 15, 15)
+                .addComponent(jLabelAutor)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(JTextFieldAutor, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabelCantidad)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(JSpinnerCantidad, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabelFecha)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jXDatePickerFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(ButtonGuardar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jButtonEliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(34, Short.MAX_VALUE))
+        );
+
+        jPanel5.setBackground(new java.awt.Color(234, 185, 79));
+
+        jLabel4.setFont(new java.awt.Font("Lucida Grande", 0, 36)); // NOI18N
+        jLabel4.setText("BIBLIOTECA");
+
+        jLabel5.setFont(new java.awt.Font("Lucida Grande", 0, 12)); // NOI18N
+        jLabel5.setText("versión 20211205");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(22, 22, 22)
+                .addComponent(jLabel4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel5)
+                .addContainerGap())
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel5)))
+        );
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(20, 20, 20))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
+        );
+
+        pack();
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void ButtonGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ButtonGuardarActionPerformed
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(rootPane, "Primero tienes que seleccionar un libro");
+        } else {
+
+            // Obtener datos del formulario    
+            String nombre = JTextFieldNombre.getText();
+            String editorial = JTextFieldEditorial.getText();
+            String autor = JTextFieldAutor.getText();
+            Integer cantidad = (Integer) JSpinnerCantidad.getValue();
+            LocalDate fecha = Instant.ofEpochMilli(jXDatePickerFecha.getDate().getTime()).atZone(ZoneId.of("America/Argentina/Buenos_Aires")).toLocalDate();
+
+            // Asignar datos al modelo del controlador
+            libroCtrl.objLibroM.setNombre(nombre);
+            libroCtrl.objLibroM.setEditorial(editorial);
+            libroCtrl.objLibroM.setAutor(autor);
+            libroCtrl.objLibroM.setCantidad(cantidad);
+            libroCtrl.objLibroM.setFecha_de_ingreso(fecha);
+            libroCtrl.objLibroM.setId(libroCtrl.objLibroM.getId());
+
+            int registro = 0;
+            registro = libroCtrl.update();
+
+            if (registro > 0) {
+                JOptionPane.showMessageDialog(rootPane, "Libro Actualizado");
+                // Actualizar datos en JTable
+                jTableLibros.setValueAt(nombre, selectedRow, 1);
+                jTableLibros.setValueAt(editorial, selectedRow, 2);
+                jTableLibros.setValueAt(autor, selectedRow, 3);
+                jTableLibros.setValueAt(cantidad, selectedRow, 4);
+                jTableLibros.setValueAt(fecha, selectedRow, 5);
+                cleanForm();
+
+            }
+        }
+
+    }//GEN-LAST:event_ButtonGuardarActionPerformed
+
+    private void jButtonEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEliminarActionPerformed
+
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(rootPane, "Primero tienes que seleccionar un libro");
+        } else {
+            tableModel.removeRow(selectedRow);
+            int registro = libroCtrl.delete();
+            if (registro > 0) {
+                JOptionPane.showMessageDialog(rootPane, "Libro Eliminado");
+                cleanForm();
+
+            }
+        }
+
+
+    }//GEN-LAST:event_jButtonEliminarActionPerformed
+
+    private void jXDatePickerFechaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jXDatePickerFechaActionPerformed
+        // TODO add your handling code here:
+
+
+    }//GEN-LAST:event_jXDatePickerFechaActionPerformed
+
+    private void jTextFieldNombreBuscadoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_jTextFieldNombreBuscadoKeyPressed
+        // TODO add your handling code here:
+        buscaPorNombre();
+    }//GEN-LAST:event_jTextFieldNombreBuscadoKeyPressed
+
+    private void cleanForm() {
+        JTextFieldNombre.setText("");
+        JTextFieldEditorial.setText("");
+        JTextFieldAutor.setText("");
+        jXDatePickerFecha.setDate(new Date());
+        JSpinnerCantidad.setValue(18);
+        selectedRow = -1;
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton ButtonGuardar;
+    private javax.swing.JSpinner JSpinnerCantidad;
+    private javax.swing.JTextField JTextFieldAutor;
+    private javax.swing.JTextField JTextFieldEditorial;
+    private javax.swing.JTextField JTextFieldNombre;
+    private javax.swing.JButton jButtonEliminar;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabelAutor;
+    private javax.swing.JLabel jLabelCantidad;
+    private javax.swing.JLabel jLabelEditorial;
+    private javax.swing.JLabel jLabelFecha;
+    private javax.swing.JLabel jLabelNombre;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable jTableLibros;
+    private javax.swing.JTextField jTextFieldNombreBuscado;
+    private org.jdesktop.swingx.JXDatePicker jXDatePickerFecha;
+    // End of variables declaration//GEN-END:variables
+}
